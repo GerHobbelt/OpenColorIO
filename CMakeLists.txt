@@ -11,7 +11,10 @@ endif()
 
 ###############################################################################
 ### GLOBAL ###
-
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Setting CMAKE_CXX_FLAGS: -std=gnu++98")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++98")
+endif ()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(OCIO_BUILD_SHARED "Set to OFF to disable building the shared core library" ON)
 option(OCIO_BUILD_STATIC "Set to OFF to disable building the static core library" ON)

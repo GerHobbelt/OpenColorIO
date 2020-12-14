@@ -23,8 +23,8 @@ if(WIN32)
     if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
         set(EXTERNAL_COMPILE_FLAGS "${EXTERNAL_COMPILE_FLAGS} /WX")
     endif()
-else()
-    set(EXTERNAL_COMPILE_FLAGS "${EXTERNAL_COMPILE_FLAGS} -Werror")
+# else()
+#     set(EXTERNAL_COMPILE_FLAGS "${EXTERNAL_COMPILE_FLAGS} -Werror")
 endif()
 
 # SHARED

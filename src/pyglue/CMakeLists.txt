@@ -22,9 +22,9 @@ endif()
 
 # Process all warnings as errors
 # Unfortunately Windows still has a warning
-if(UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-endif()
+# if(UNIX)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+# endif()
 
 find_package(PythonLibs)
 if(NOT PYTHONLIBS_FOUND)
