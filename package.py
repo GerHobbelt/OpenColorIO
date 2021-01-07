@@ -2,7 +2,7 @@
 
 name = 'ocio'
 
-version = '1.1.1-ta.1.0.0'
+version = '1.1.1-ta.1.1.0'
 
 authors = [
     'benjamin.skinner',
@@ -32,8 +32,15 @@ def commands():
     env.OCIO_PACKAGE_VERSION.set(split_versions[1])
 
     env.OCIO_ROOT.set("{root}")
+    env.OCIO_LOCATION.set("{root}")
+
+
     env.OCIO_INCLUDE_DIR.set("{root}/include")
     env.OCIO_LIBRARY_DIR.set("{root}/lib")
     env.OCIO_BINARY_DIR.set("{root}/bin")
+
+    import sys
+    if 'win' not in str(sys.platform):
+        env.LD_LIBRARY_PATH.append( '{root}/lib64' )
 
     env.PATH.append( str(env.OCIO_BINARY_DIR) )
