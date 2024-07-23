@@ -11,3 +11,8 @@ mastercopy
 *.pyc
 !*.yml
 .vscode
+
+# HH
+_rez_build
+.vscode
+.idea
