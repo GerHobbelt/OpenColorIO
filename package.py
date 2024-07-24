@@ -78,8 +78,8 @@ def commands():
     env.PATH.append("{root}/bin")
     env.LD_LIBRARY_PATH.append("{root}/lib64")
 
-    if building:
-        env.PKG_CONFIG_PATH.append("{root}/lib64/cmake/OpenColorIO")
+    # if building:
+    #     env.PKG_CONFIG_PATH.append("{root}/lib64/cmake/OpenColorIO")
 
     if "python" in resolve:
         python_ver = resolve["python"].version
