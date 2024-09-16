@@ -794,7 +794,12 @@ public:
         }
 
         const ViewVec & views = searchShared ? m_sharedViews : iter->second.m_views;
+#if 1 // Weta FX Customization: Address valid compiler complaint:
+        // This fix should probably be propagated upstream:
+        const auto viewIt = FindView(views, view);
+#else // Was:
         const auto & viewIt = FindView(views, view);
+#endif
 
         if (viewIt != views.end())
         {

@@ -1,0 +1,202 @@
+habitat: 1.0
+
+Settings:
+  Name: opencolorio
+  InstallForVFXPlatform: true
+  InstallIncludesDebug: true
+  Variants: [ VP23_static, VP23DBG_static, VP23, VP23DBG ]
+  DefaultVariant: VP23
+
+# NB: Using camel case for the pak name as that is pre-existing
+opencolorio:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: OpenColorIO
+  Raw:
+    # SPDX https://spdx.org/licenses/ identifier or WētāDigital
+    license: BSD-3-Clause
+    third_party: true
+  PakVariables:
+    PATH: !Prepend '${INSTALL_PREFIX}/opt/bin'
+    LD_LIBRARY_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib'
+    PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/opt/python%(PYTHONVERSION)s']
+    OCIO: '/proj/%(FILM)s/prod/grading/ocio/config.ocio'
+  DeveloperVariables:
+    LIBOPENCOLORIO_INCLUDES: '${INSTALL_PREFIX}/include'
+    LIBOPENCOLORIO_LIBPATH: '${INSTALL_PREFIX}/opt/lib'
+    CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/opt'
+    PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
+  Library: opencolorio
+  Requires:
+    python: !Soft ">=3.10.13<3.11"
+  DeveloperRequires:
+    # This will include anything defined in `Requires` as well.
+    # However, for DeveloperRequires do hard requirement for python:
+    python: ">=3.10.13<3.11"
+    abi: "gcc-171"
+
+opencolorio-test:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: OpenColorIO
+  PakVersionOverride: !Sub "${Version}-test"
+  Raw:
+    # SPDX https://spdx.org/licenses/ identifier or WētāDigital
+    license: BSD-3-Clause
+    third_party: true
+  PakVariables:
+    PATH: !Prepend '${INSTALL_PREFIX}/opt/bin'
+    LD_LIBRARY_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib'
+    PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/opt/python%(PYTHONVERSION)s']
+    OCIO: '/proj/%(FILM)s/prod/grading/ocio/test_config.ocio'
+  DeveloperVariables:
+    LIBOPENCOLORIO_INCLUDES: '${INSTALL_PREFIX}/include'
+    LIBOPENCOLORIO_LIBPATH: '${INSTALL_PREFIX}/opt/lib'
+    CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/opt'
+    PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
+  Library: opencolorio
+  Requires:
+    python: !Soft ">=3.10.13<3.11"
+  DeveloperRequires:
+    # This will include anything defined in `Requires` as well.
+    # However, for DeveloperRequires do hard requirement for python:
+    python: ">=3.10.13<3.11"
+    abi: "gcc-171"
+
+opencolorio-dbg:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: OpenColorIO
+  PakVersionOverride: !Sub "${Version}-dbg"
+  Raw:
+    # SPDX https://spdx.org/licenses/ identifier or WētāDigital
+    license: BSD-3-Clause
+    third_party: true
+  PakVariables:
+    PATH: !Prepend '${INSTALL_PREFIX}/dbg/bin'
+    LD_LIBRARY_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib'
+    PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/dbg/python%(PYTHONVERSION)s']
+    OCIO: '/proj/%(FILM)s/prod/grading/ocio/config.ocio'
+  DeveloperVariables:
+    LIBOPENCOLORIO_INCLUDES: '${INSTALL_PREFIX}/include'
+    LIBOPENCOLORIO_LIBPATH: '${INSTALL_PREFIX}/dbg/lib'
+    CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/dbg'
+    PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib/pkgconfig'
+  Library: opencolorio
+  Requires:
+    python: !Soft ">=3.10.13<3.11"
+  DeveloperRequires:
+    # This will include anything defined in `Requires` as well.
+    # However, for DeveloperRequires do hard requirement for python:
+    python: ">=3.10.13<3.11"
+    abi: "gcc-171"
+
+libopencolorio:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: libopencolorio
+  Raw:
+    # SPDX https://spdx.org/licenses/ identifier or WētāDigital
+    license: BSD-3-Clause
+    third_party: true
+    deprecated: true
+  Requires:
+    OpenColorIO: "${VERSION}"
+
+pyopencolorio:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: pyopencolorio
+  Raw:
+    # SPDX https://spdx.org/licenses/ identifier or WētāDigital
+    license: BSD-3-Clause
+    third_party: true
+  Requires:
+    OpenColorIO: "${VERSION}"
+
+build.opencolorio:
+  Type: Weta::OSS::CmakePackage
+  BaseEnvironment:
+    - cmake-3.27.7
+    - ninja-1.10.2
+    - patchelf-0.18.0
+    - python-3.10.13
+    - pynumpy-1.23.5
+  BuildEnvironment:
+    - WetaVFXPlatform-2023.0.2
+    - lcms2-2.14-1
+    - boost-1.80.0-weta.1
+    - openexr-3.1.13-weta.1
+    - imath-3.1.12-weta.1
+    - libexpat-2.4.1
+    - libyamlcpp-0.8.0-weta.1
+    - libpystring-1.1.4-weta.1
+    - minizip_ng-3.0.10
+    - pybind11-2.13.5
+    - zlib-1.2.13
+    - abi-gcc-171
+  ExtraConfigureArgs: !Sub |
+    -DWETA_EXTERN_LIB_IGNORE_POSTFIX=ON
+    -DCMAKE_INSTALL_RPATH="\$ORIGIN/../lib"
+    -DBUILD_TESTING=OFF
+    -DCMAKE_CXX_STANDARD=${Variant:C++Version}
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE
+    -DOCIO_BUILD_APPS=ON
+    -DOCIO_USE_OIIO_FOR_APPS=OFF
+    -DOCIO_BUILD_PYTHON=ON
+    -DOCIO_BUILD_OPENFX=OFF
+    -DOCIO_USE_SSE=ON
+    -DOCIO_BUILD_TESTS=OFF
+    -DOCIO_BUILD_GPU_TESTS=OFF
+    -DOCIO_USE_HEADLESS=ON
+    -DOCIO_WARNING_AS_ERROR=ON
+    -DOCIO_BUILD_DOCS=OFF
+    -DOCIO_BUILD_FROZEN_DOCS=OFF
+    -DOCIO_BUILD_NUKE=OFF
+    -DOCIO_PYTHON_VERSION=3
+    -DOCIO_BUILD_JAVA=OFF
+    -Dexpat_ROOT=${{LIBEXPAT_LIBPATH%/*}}
+    -Dexpat_STATIC_LIBRARY=ON
+    -Dyaml-cpp_ROOT=${{LIBYAMLCPP_LIBPATH%/*}}
+    -Dyaml-cpp_STATIC_LIBRARY=ON
+    -DImath_ROOT=${{LIBIMATH_LIBPATH%/*}}
+    -DImath_STATIC_LIBRARY=ON
+    -Dpystring_ROOT=${{LIBPYSTRING_LIBPATH%/*}}
+    -Dpystring_LIBRARY=${{LIBPYSTRING_LIBPATH}}/libpystring.a
+    -DZLIB_ROOT=${{LIBZLIB_LIBPATH%/*}}
+    -DZLIB_STATIC_LIBRARY=ON
+    -Dminizip-ng_ROOT=${{LIBMINIZIP_NG_LIBPATH%/*}}
+    -Dminizip-ng_STATIC_LIBRARY=ON
+    -Dlcms2_ROOT=${{LIBLCMS2_LIBPATH%/*}}
+    -Dlcms2_STATIC_LIBRARY=ON
+    -Dpybind11_ROOT=${{LIBPYBIND11_INCLUDES%/*}}
+    -DPYTHON_VARIANT_PATH=${{INSTALL_PREFIX}}${{VARIANT_PREFIX}}/python${{PYTHONVERSION}}
+    -DCMAKE_CXX_STANDARD_LIBRARIES="-Wl,-Bsymbolic /vol/weta/linux64/bzip2/1.0.8-weta.1/lib/libbz2.a /vol/apps/libraries/liblzma/5.1.1/gcc-6.4.0/lib/liblzma.a /vol/apps/libraries/libopenssl/1.1.1.m/gcc-171/lib/libcrypto.a -ldl"
+    -DOpenEXR_FOUND=OFF
+  PreProcess: |
+    if [[ -L "${INSTALL_PREFIX}${VARIANT_PREFIX}/include" ]]; then
+        rm "${INSTALL_PREFIX}${VARIANT_PREFIX}/include"
+    fi
+  PostProcess: |
+    if [[ ! -L "${INSTALL_PREFIX}${VARIANT_PREFIX}/include" ]]; then
+      if [[ -d "${INSTALL_PREFIX}${VARIANT_PREFIX}/include" ]]; then
+        # Saw an actual directory, so the headers there are the ones
+        # generated by cmake without the custom snippet. Save a copy.
+        mkdir -p ${BUILD_DIR}/weta_orig_include
+        cp -fr -t ${BUILD_DIR}/weta_orig_include ${INSTALL_PREFIX}${VARIANT_PREFIX}/include/.
+      fi
+    fi
+    # Regenerate the common header directory (with the custom snippet) using
+    # the saved common copies of the headers generated by cmake.
+    mkdir -p ${INSTALL_PREFIX}/include
+    find ${BUILD_DIR}/weta_orig_include -mindepth 1 -type d -printf '%P\0' | xargs -0r -I__SUBPATH__ mkdir -p ${INSTALL_PREFIX}/include/__SUBPATH__
+    find ${BUILD_DIR}/weta_orig_include -mindepth 1 -type f -printf '%P\0' | xargs -0r -I__SUBPATH__ sed -n w${INSTALL_PREFIX}/include/__SUBPATH__ weta_patches/weta_quiet_header_warnings_snippet.h ${BUILD_DIR}/weta_orig_include/__SUBPATH__
+    # Clear out what was present for the per-variant headers and make sure
+    # it is a symlink to the common header directory:
+    rm -rf ${INSTALL_PREFIX}${VARIANT_PREFIX}/include
+    ln -s ${INSTALL_PREFIX}/include ${INSTALL_PREFIX}${VARIANT_PREFIX}/include
+    if [[ -e ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libOpenColorIO.a ]]; then
+      ln -fTs libOpenColorIO.a ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libOpenColorIO${WETA_VFXPLATFORM_ID}.a
+      ln -fTs libOpenColorIO.a ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libopencolorio${WETA_VFXPLATFORM_ID}.a
+      ln -fTs libOpenColorIO.a ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libopencolorio.a
+    fi
+    if [[ -e ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libOpenColorIO.so ]]; then
+      ln -fTs libOpenColorIO.so ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libOpenColorIO${WETA_VFXPLATFORM_ID}.so
+      ln -fTs libOpenColorIO.so ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libopencolorio${WETA_VFXPLATFORM_ID}.so
+      ln -fTs libOpenColorIO.so ${INSTALL_PREFIX}${VARIANT_PREFIX}/lib/libopencolorio.so
+    fi

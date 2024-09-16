@@ -190,6 +190,11 @@ if(APPLE)
 	)
 endif()
 
+# Weta FX Customization: Suppress some annoying warnings:
+target_compile_options(PyOpenColorIO PRIVATE
+  -Wno-abi
+  )
+
 target_include_directories(PyOpenColorIO
 	PRIVATE
 		PyOpenColorIO
@@ -238,5 +243,8 @@ endif()
 set(PYTHON_VARIANT_PATH ${_Python_VARIANT_PATH} CACHE INTERNAL "")
 
 install(TARGETS PyOpenColorIO
-    LIBRARY DESTINATION ${_Python_VARIANT_PATH}
+    # Weta FX Customization: Change the variable name that is referenced:
+    LIBRARY DESTINATION ${PYTHON_VARIANT_PATH}
+    # Was:
+    #LIBRARY DESTINATION ${_Python_VARIANT_PATH}
 )

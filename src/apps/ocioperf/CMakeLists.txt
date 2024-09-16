@@ -10,6 +10,11 @@ add_executable(ocioperf ${SOURCES})
 set_target_properties(ocioperf PROPERTIES
     COMPILE_FLAGS "${PLATFORM_COMPILE_FLAGS}")
 
+# Weta FX Customization: Suppress some annoying warnings:
+target_compile_options(ocioperf PRIVATE
+  -Wno-abi
+  )
+
 target_link_libraries(ocioperf
     PRIVATE
         apputils

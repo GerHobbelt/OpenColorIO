@@ -205,6 +205,15 @@ target_compile_features(OpenColorIO
     PUBLIC cxx_std_11
 )
 
+# Weta FX Customization: Suppress some annoying warnings:
+target_compile_options(OpenColorIO PRIVATE
+  -Wno-abi
+  -Wno-cast-qual
+  -Wno-overloaded-virtual
+  -Wno-sign-promo
+  -Wno-undef
+  )
+
 if(BUILD_SHARED_LIBS AND WIN32)
     # Only use the versioned name with the dynamic library.
     set(CMAKE_SHARED_LIBRARY_SUFFIX _${OpenColorIO_VERSION_MAJOR}_${OpenColorIO_VERSION_MINOR}.dll)

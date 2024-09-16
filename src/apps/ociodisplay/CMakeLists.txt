@@ -27,6 +27,12 @@ if (USE_MSVC)
 	target_compile_options(ociodisplay PRIVATE /wd4267 /wd4244)
 endif()
 
+# Weta FX Customization: Suppress some annoying warnings:
+target_compile_options(ociodisplay PRIVATE
+  -Wno-cast-qual
+  -Wno-undef
+  )
+
 target_include_directories(ociodisplay 
     SYSTEM
     PRIVATE
