@@ -52,6 +52,12 @@ set_target_properties(oglapphelpers PROPERTIES
     COMPILE_FLAGS "${CUSTOM_COMPILE_FLAGS}"
 )
 
+# Weta FX Customization: Suppress some annoying warnings:
+target_compile_options(oglapphelpers PRIVATE
+  -Wno-cast-qual
+  -Wno-undef
+  )
+
 target_include_directories(oglapphelpers
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}

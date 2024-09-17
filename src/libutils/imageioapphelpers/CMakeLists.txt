@@ -20,6 +20,12 @@ set_target_properties(imageioapphelpers PROPERTIES
     COMPILE_FLAGS "${PLATFORM_COMPILE_FLAGS}"
 )
 
+# Weta FX Customization: Suppress some annoying warnings:
+target_compile_options(imageioapphelpers PRIVATE
+  -Wno-cast-qual
+  -Wno-sign-promo
+  )
+
 target_compile_definitions(imageioapphelpers
     PRIVATE
         $<$<STREQUAL:"${OCIO_IMAGE_BACKEND}","OpenEXR">:USE_OPENEXR>
