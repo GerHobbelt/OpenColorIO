@@ -3,17 +3,17 @@ File:       icProfileHeader.h
 
 Contains:   ICC profile definitions and structures including Version 4 extensions
 
-Copyright:  © see ICC Software License
+Copyright:  Â© see ICC Software License
 
 * <b>
 * This version of the header file corresponds to the profile
-* specification version 4.2 as defined in ICC Specificion ICC.1:2004-04.
+* specification version 4.2 as defined in ICC Specification ICC.1:2004-04.
 *
 * Some definitions only provided by version 2.x profiles are also included.
 *
 * This header file should not be considered as a replacement for the ICC
 * profile specification.  The ICC profile specification should always be
-* considered the ULTIMATE authority related to the specifiation for
+* considered the ULTIMATE authority related to the specification for
 * contents in ICC profile file.  Conflicts between this header file
 * and the ICC profile specification (if they exist) should be deferred
 * to the ICC profile specification.
@@ -95,7 +95,7 @@ memcpy(ucr_char, ucr_string, string_bytes);
 * ====================================================================
 *
 * This software consists of voluntary contributions made by many
-* individuals on behalf of the The International Color Consortium.
+* individuals on behalf of The International Color Consortium.
 *
 *
 * Membership in the ICC is encouraged when this software is used for
@@ -726,7 +726,7 @@ typedef enum {
 /**
 * Note: The next three enum types are for DeviceSettingType structures
 * supported by V2 profiles.  The DeviceSettingsType was removed in the
-* V4 specificaiton.*/
+* V4 specification.*/
 
 /** DeviceSettingsType structure ID signatures for Microsoft 'msft' platform*/
 typedef enum {
@@ -756,7 +756,7 @@ typedef enum {
     icDMDitherReserved8 = 0x0008,
     icDMDitherReserved9 = 0x0009,
     icDMDitherGrayscale = 0x000A, /* Device does grayscaling */
-    icDMDitherUser = 0x0100, /* Device-specifice halftones
+    icDMDitherUser = 0x0100, /* Device-specific halftones
                              are >= 256 */
 } icDMHalftoneType;
 
@@ -866,7 +866,7 @@ typedef struct {
     icUInt16Number      funcType;       /* Function Type                */
                                         /* 0 = gamma only               */
     icUInt16Number      pad;            /* Padding for byte alignment   */
-    icS15Fixed16Number  gamma;          /* x°gamma                      */
+    icS15Fixed16Number  gamma;          /* xÂ°gamma                      */
                                         /* up to 7 values Y,a,b,c,d,e,f */
 } icParametricCurve;
 
@@ -875,7 +875,7 @@ typedef struct {
     icUInt16Number      funcType;       /* Function Type                */
                                         /* 0 = gamma only               */
     icUInt16Number      pad;            /* Padding for byte alignment   */
-    icS15Fixed16Number  gamma;          /* x°gamma                      */
+    icS15Fixed16Number  gamma;          /* xÂ°gamma                      */
     icS15Fixed16Number  a;              /* a                            */
     icS15Fixed16Number  b;              /* b                            */
     icS15Fixed16Number  c;              /* c                            */
@@ -1047,7 +1047,7 @@ typedef struct {
 /** Profile sequence structure */
 typedef struct {
     icSignature                 deviceMfg;      /* Device Manufacturer */
-    icSignature                 deviceModel;    /* Decvice Model */
+    icSignature                 deviceModel;    /* Device Model */
     icUInt64Number              attributes;     /* Device attributes */
     icTechnologySignature       technology;     /* Technology signature */
     icInt8Number                data[icAny];    /* Descriptions text follows */
