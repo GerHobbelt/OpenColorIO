@@ -4,6 +4,8 @@ Settings:
   Name: opencolorio
   InstallForVFXPlatform: true
   InstallIncludesDebug: true
+  Variants: [ VP22, VP22DBG ]
+  DefaultVariant: VP22
 
 # NB: Using camel case for the pak name as that is pre-existing
 opencolorio:
@@ -18,13 +20,21 @@ opencolorio:
     PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/opt/python%(PYTHONVERSION)s']
     OCIO: '/proj/%(FILM)s/prod/grading/ocio/config.ocio'
   DeveloperVariables:
+    LIBOPENCOLORIO_INCLUDES: '${INSTALL_PREFIX}/include'
+    LIBOPENCOLORIO_LIBPATH: '${INSTALL_PREFIX}/opt/lib'
     CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/opt'
+    PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
   Library: opencolorio
   Requires:
     weta.runtime: ">=1.21.1"
     openexr: ">=3.1.0<3.2.0"
     libexpat: ">=2.4.1<2.5"
     python: !Soft ">=3.9.0<3.10.0"
+  DeveloperRequires:
+    # This will include anything defined in `Requires` as well.
+    # However, for DeveloperRequires do hard requirement for python:
+    python: ">=3.9.0<3.10.0"
+    abi: "gcc-9.4.0"
 
 opencolorio-test:
   Type: Weta::OZ::SimplePak
@@ -39,13 +49,21 @@ opencolorio-test:
     PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/opt/python%(PYTHONVERSION)s']
     OCIO: '/proj/%(FILM)s/prod/grading/ocio/test_config.ocio'
   DeveloperVariables:
+    LIBOPENCOLORIO_INCLUDES: '${INSTALL_PREFIX}/include'
+    LIBOPENCOLORIO_LIBPATH: '${INSTALL_PREFIX}/opt/lib'
     CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/opt'
+    PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
   Library: opencolorio
   Requires:
     weta.runtime: ">=1.21.1"
     openexr: ">=3.1.0<3.2.0"
     libexpat: ">=2.4.1<2.5"
     python: !Soft ">=3.9.0<3.10.0"
+  DeveloperRequires:
+    # This will include anything defined in `Requires` as well.
+    # However, for DeveloperRequires do hard requirement for python:
+    python: ">=3.9.0<3.10.0"
+    abi: "gcc-9.4.0"
 
 opencolorio-dbg:
   Type: Weta::OZ::SimplePak
@@ -60,14 +78,21 @@ opencolorio-dbg:
     PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/dbg/python%(PYTHONVERSION)s']
     OCIO: '/proj/%(FILM)s/prod/grading/ocio/config.ocio'
   DeveloperVariables:
-#    LIBOPENCOLORIO_LIBPATH: !Prepend '${INSTALL_PREFIX}/%(WETA_VFXPLATFORM_ID)s/lib'
+    LIBOPENCOLORIO_INCLUDES: '${INSTALL_PREFIX}/include'
+    LIBOPENCOLORIO_LIBPATH: '${INSTALL_PREFIX}/dbg/lib'
     CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/dbg'
+    PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib/pkgconfig'
   Library: opencolorio
   Requires:
     weta.runtime: ">=1.21.1"
     openexr: ">=3.1.0<3.2.0"
     libexpat: ">=2.4.1<2.5"
     python: !Soft ">=3.9.0<3.10.0"
+  DeveloperRequires:
+    # This will include anything defined in `Requires` as well.
+    # However, for DeveloperRequires do hard requirement for python:
+    python: ">=3.9.0<3.10.0"
+    abi: "gcc-9.4.0"
 
 libopencolorio:
   Type: Weta::OZ::SimplePak
@@ -87,7 +112,6 @@ pyopencolorio:
 
 build.opencolorio:
   Type: Weta::OSS::CmakePackage
-  VariantsOverride: [ VP22, VP22DBG, VP22_static, VP22DBG_static ]
   BaseEnvironment:
     - cmake-3.21.3
     - ninja-1.10.2
