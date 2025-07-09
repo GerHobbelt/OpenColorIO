@@ -1,0 +1,178 @@
+habitat: "26-Oct-2020"
+
+Settings:
+  Name: opencolorio
+  InstallForVFXPlatform: true
+  InstallIncludesDebug: true
+
+# NB: Using camel case for the pak name as that is pre-existing
+opencolorio:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: OpenColorIO
+  Raw:
+    license: BSD-3-Clause
+    third_party: true
+  PakVariables:
+    PATH: !Prepend '${INSTALL_PREFIX}/opt/bin'
+    LD_LIBRARY_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib'
+    PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/opt/python%(PYTHONVERSION)s']
+    OCIO: '/proj/%(FILM)s/prod/grading/ocio/config.ocio'
+  DeveloperVariables:
+    CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/opt'
+  Library: opencolorio
+  Requires:
+    weta.runtime: ">=1.21.1"
+    openexr: ">=3.1.0<3.2.0"
+    libexpat: ">=2.4.1<2.5"
+    python: !Soft ">=3.9.0<3.10.0"
+
+opencolorio-test:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: OpenColorIO
+  PakVersionOverride: !Sub "${Version}-test"
+  Raw:
+    license: BSD-3-Clause
+    third_party: true
+  PakVariables:
+    PATH: !Prepend '${INSTALL_PREFIX}/opt/bin'
+    LD_LIBRARY_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib'
+    PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/opt/python%(PYTHONVERSION)s']
+    OCIO: '/proj/%(FILM)s/prod/grading/ocio/test_config.ocio'
+  DeveloperVariables:
+    CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/opt'
+  Library: opencolorio
+  Requires:
+    weta.runtime: ">=1.21.1"
+    openexr: ">=3.1.0<3.2.0"
+    libexpat: ">=2.4.1<2.5"
+    python: !Soft ">=3.9.0<3.10.0"
+
+opencolorio-dbg:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: OpenColorIO
+  PakVersionOverride: !Sub "${Version}-dbg"
+  Raw:
+    license: BSD-3-Clause
+    third_party: true
+  PakVariables:
+    PATH: !Prepend '${INSTALL_PREFIX}/dbg/bin'
+    LD_LIBRARY_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib'
+    PYTHONPATH: !PrependFor ['python', '${INSTALL_PREFIX}/dbg/python%(PYTHONVERSION)s']
+    OCIO: '/proj/%(FILM)s/prod/grading/ocio/config.ocio'
+  DeveloperVariables:
+#    LIBOPENCOLORIO_LIBPATH: !Prepend '${INSTALL_PREFIX}/%(WETA_VFXPLATFORM_ID)s/lib'
+    CMAKE_PREFIX_PATH: !Prepend '${INSTALL_PREFIX}/dbg'
+  Library: opencolorio
+  Requires:
+    weta.runtime: ">=1.21.1"
+    openexr: ">=3.1.0<3.2.0"
+    libexpat: ">=2.4.1<2.5"
+    python: !Soft ">=3.9.0<3.10.0"
+
+libopencolorio:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: libopencolorio
+  Raw:
+    license: BSD-3-Clause
+    third_party: true
+    deprecated: true
+  Requires:
+    OpenColorIO: "${VERSION}"
+
+pyopencolorio:
+  Type: Weta::OZ::SimplePak
+  PakNameOverride: pyopencolorio
+  Requires:
+    OpenColorIO: "${VERSION}"
+
+build.opencolorio:
+  Type: Weta::OSS::CmakePackage
+  VariantsOverride: [ VP22, VP22DBG, VP22_static, VP22DBG_static ]
+  BaseEnvironment:
+    - cmake-3.21.3
+    - ninja-1.10.2
+    - patchelf-0.13.0
+    - weta.runtime-1.21.1
+    - python-3.9.10
+    - pynumpy-1.22.3
+    - oz-official
+  BuildEnvironment:
+    # will need lcms2, et al if we start building the apps which we may want...
+    - WetaVFXPlatform-2022.0.0
+    - python-3.9.10
+    - pynumpy-1.22.3
+    - lcms2-2.14-1
+    - boost-1.76.0-weta.2
+    - openexr-3.1.5-weta.2
+    - imath-3.1.6-weta.1
+    - libexpat-2.4.1
+    - libyamlcpp-0.7.0
+    - libpystring-1.1.3
+    - libpybind11-2.6.2
+  ExtraConfigureArgs: !Sub |
+    -DWETA_EXTERN_LIB_IGNORE_POSTFIX=ON
+    -DCMAKE_INSTALL_RPATH="\$ORIGIN/../lib:\$ORIGIN/../../../../weta.runtime/1.21.stable/lib"
+    -DBUILD_TESTING=OFF
+    -DCMAKE_CXX_STANDARD=${Variant:C++Version}
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE
+    -DOCIO_BUILD_APPS=ON
+    -DOCIO_USE_OIIO_FOR_APPS=OFF
+    -DOCIO_BUILD_NUKE=OFF
+    -DOCIO_BUILD_OPENFX=OFF
+    -DOCIO_BUILD_TESTS=OFF
+    -DOCIO_BUILD_GPU_TESTS=OFF
+    -DOCIO_USE_HEADLESS=ON
+    -DOCIO_BUILD_FROZEN_DOCS=OFF
+    -DOCIO_BUILD_DOCS=OFF
+    -DOCIO_BUILD_PYTHON=ON
+    -DOCIO_PYTHON_VERSION=3
+    -DOCIO_BUILD_JAVA=OFF
+    -DOCIO_USE_SSE=ON
+    -Dexpat_ROOT=${{LIBEXPAT_LIBPATH%/*}}
+    -Dpybind11_ROOT=${{LIBPYBIND11_INCLUDES%/*}}
+    -DPYTHON_VARIANT_PATH=${{INSTALL_PREFIX}}${{VARIANT_PREFIX}}/python${{PYTHONVERSION}}
+  PreProcess: |
+    sed -i 's/CMAKE_CONFIGURATION_TYPES "Debug/CMAKE_CONFIGURATION_TYPES "VP22;VP22DBG;Debug/' CMakeLists.txt
+    sed -i 's/LIBRARY DESTINATION ${_Python_/LIBRARY DESTINATION ${PYTHON_/' src/bindings/python/CMakeLists.txt
+    if [[ -L "${INSTALL_PREFIX}${VARIANT_PREFIX}/include" ]]; then
+        rm "${INSTALL_PREFIX}${VARIANT_PREFIX}/include"
+    fi
+  PostProcess: |
+    oz app edit --av OpenColorIO-${Version}-test --development --notes "Used for testing shows"
+    pushd ${INSTALL_PREFIX}${VARIANT_PREFIX}
+    if [[ "$BUILD_SUBTYPE" == "$BUILD_TYPE" ]]; then
+        if [[ "${VARIANT_PREFIX}" == "/opt" ]]; then
+            rm -rf ${INSTALL_PREFIX}/include
+            mv ${INSTALL_PREFIX}${VARIANT_PREFIX}/include ${INSTALL_PREFIX}
+        fi
+        rm -rf ${INSTALL_PREFIX}${VARIANT_PREFIX}/include
+        ln -s ${INSTALL_PREFIX}/include ${INSTALL_PREFIX}${VARIANT_PREFIX}/include
+        if [[ -e lib/libOpenColorIO.so.${VERSION_MAJ}.${VERSION_MIN}.${VERSION_PATCH} ]]; then
+            patchelf --set-rpath '$ORIGIN/../../../../openexr/3.1.5-weta.2/VP22/lib:$ORIGIN/../../../../weta.runtime/1.21.stable/lib' lib/libOpenColorIO.so.${VERSION_MAJ}.${VERSION_MIN}.${VERSION_PATCH}
+            cd lib
+            if [[ ! -e libopencolorio.so ]]; then
+                ln -s libOpenColorIO.so libopencolorio.so
+            fi
+            if [[ ! -e libOpenColorIOVP22.so ]]; then
+                ln -s libOpenColorIO.so libOpenColorIOVP22.so
+                ln -s libOpenColorIO.so libopencolorioVP22.so
+            fi
+            cd ..
+        fi
+        if [[ -e python${PYTHONVERSION}/PyOpenColorIO.so ]]; then
+            patchelf --set-rpath '$ORIGIN/../lib:$ORIGIN/../../../../weta.runtime/1.21.stable/lib' python${PYTHONVERSION}/PyOpenColorIO.so
+        fi
+    else
+        rm -rf ${INSTALL_PREFIX}${VARIANT_PREFIX}/include
+        ln -s ${INSTALL_PREFIX}/include ${INSTALL_PREFIX}${VARIANT_PREFIX}/include
+        cd lib
+        if [[ ! -e libopencolorio.a ]]; then
+            ln -s libOpenColorIO.a libopencolorio.a
+        fi
+        if [[ ! -e libOpenColorIOVP22.a ]]; then
+            ln -s libOpenColorIO.a libOpenColorIOVP22.a
+            ln -s libOpenColorIO.a libopencolorioVP22.a
+        fi
+        cd ..
+    fi
+    popd
