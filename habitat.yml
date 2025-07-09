@@ -132,8 +132,6 @@ build.opencolorio:
     -Dpybind11_ROOT=${{LIBPYBIND11_INCLUDES%/*}}
     -DPYTHON_VARIANT_PATH=${{INSTALL_PREFIX}}${{VARIANT_PREFIX}}/python${{PYTHONVERSION}}
   PreProcess: |
-    sed -i 's/CMAKE_CONFIGURATION_TYPES "Debug/CMAKE_CONFIGURATION_TYPES "VP22;VP22DBG;Debug/' CMakeLists.txt
-    sed -i 's/LIBRARY DESTINATION ${_Python_/LIBRARY DESTINATION ${PYTHON_/' src/bindings/python/CMakeLists.txt
     if [[ -L "${INSTALL_PREFIX}${VARIANT_PREFIX}/include" ]]; then
         rm "${INSTALL_PREFIX}${VARIANT_PREFIX}/include"
     fi
