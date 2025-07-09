@@ -4,7 +4,7 @@ Settings:
   Name: opencolorio
   InstallForVFXPlatform: true
   InstallIncludesDebug: true
-  Variants: [ VP23_static, VP23DBG_static, VP23, VP23DBG ]
+  Variants: [ VP23, VP23DBG ]
   DefaultVariant: VP23
 
 # NB: Using camel case for the pak name as that is pre-existing
