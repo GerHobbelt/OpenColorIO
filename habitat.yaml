@@ -4,7 +4,7 @@ Settings:
   Name: opencolorio
   InstallForVFXPlatform: true
   InstallIncludesDebug: true
-  Variants: [ VP23_static, VP23DBG_static, VP23, VP23DBG ]
+  Variants: [ VP23, VP23DBG ]
   DefaultVariant: VP23
 
 # NB: Using camel case for the pak name as that is pre-existing
@@ -27,6 +27,8 @@ opencolorio:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
   Library: opencolorio
   Requires:
+    libexpat: ">=2.4.1<2.5"
+    openexr: ">=3.1.0<3.2.0"
     python: !Soft ">=3.10.13<3.11"
   DeveloperRequires:
     # This will include anything defined in `Requires` as well.
@@ -54,6 +56,8 @@ opencolorio-test:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
   Library: opencolorio
   Requires:
+    libexpat: ">=2.4.1<2.5"
+    openexr: ">=3.1.0<3.2.0"
     python: !Soft ">=3.10.13<3.11"
   DeveloperRequires:
     # This will include anything defined in `Requires` as well.
@@ -81,6 +85,8 @@ opencolorio-dbg:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib/pkgconfig'
   Library: opencolorio
   Requires:
+    libexpat: ">=2.4.1<2.5"
+    openexr: ">=3.1.0<3.2.0"
     python: !Soft ">=3.10.13<3.11"
   DeveloperRequires:
     # This will include anything defined in `Requires` as well.
@@ -112,16 +118,16 @@ pyopencolorio:
 build.opencolorio:
   Type: Weta::OSS::CmakePackage
   BaseEnvironment:
-    - cmake-3.27.7
+    - cmake-4.0.1-weta.1
     - ninja-1.10.2
     - patchelf-0.18.0
     - python-3.10.13
     - pynumpy-1.23.5
   BuildEnvironment:
-    - WetaVFXPlatform-2023.0.2
+    - WetaVFXPlatform-2023.0.6
     - lcms2-2.14-1
-    - boost-1.80.0-weta.1
-    - openexr-3.1.13-weta.1
+    - boost-1.80.0-weta.2
+    - openexr-3.1.13-weta.2
     - imath-3.1.12-weta.1
     - libexpat-2.4.1
     - libyamlcpp-0.8.0-weta.1
