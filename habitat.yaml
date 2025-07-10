@@ -27,6 +27,8 @@ opencolorio:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
   Library: opencolorio
   Requires:
+    libexpat: ">=2.4.1<2.5"
+    openexr: ">=3.1.0<3.2.0"
     python: !Soft ">=3.10.13<3.11"
   DeveloperRequires:
     # This will include anything defined in `Requires` as well.
@@ -54,6 +56,8 @@ opencolorio-test:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/opt/lib/pkgconfig'
   Library: opencolorio
   Requires:
+    libexpat: ">=2.4.1<2.5"
+    openexr: ">=3.1.0<3.2.0"
     python: !Soft ">=3.10.13<3.11"
   DeveloperRequires:
     # This will include anything defined in `Requires` as well.
@@ -81,6 +85,8 @@ opencolorio-dbg:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib/pkgconfig'
   Library: opencolorio
   Requires:
+    libexpat: ">=2.4.1<2.5"
+    openexr: ">=3.1.0<3.2.0"
     python: !Soft ">=3.10.13<3.11"
   DeveloperRequires:
     # This will include anything defined in `Requires` as well.
