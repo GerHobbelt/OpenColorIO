@@ -1,0 +1,25 @@
+# CI/CD file for OCIO
+
+# The following variable is the release
+# version to make. This must be bumped prior
+# to actual release or the CD build step will
+# fail. This is here such that merge requests
+# and such can build a test pak vi CI
+# It should be roughly of a semantic version
+# but really should just begin with a number
+# For CI / test builds, a $USER-test suffix
+# will automatically be added
+
+default:
+  tags:
+    - shared-runner:nfs
+
+variables:
+  RELEASE_VERSION: 2.1.3-5-weta.1
+  KUBERNETES_CPU_LIMIT: "16"
+  KUBERNETES_MEMORY_REQUEST: "32Gi"
+
+include:
+  - project: 'habitat/platform/gitlab-templates'
+    ref: 'main'
+    file: 'default.yml'

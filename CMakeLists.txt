@@ -86,7 +86,7 @@ endif()
 # List all the valid build types.
 
 if(NOT DEFINED CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_CONFIGURATION_TYPES "Debug;Release;MinSizeRel;RelWithDebInfo" CACHE STRING "" FORCE)
+    set(CMAKE_CONFIGURATION_TYPES "VP22;VP22DBG;Debug;Release;MinSizeRel;RelWithDebInfo" CACHE STRING "" FORCE)
     mark_as_advanced(CMAKE_CONFIGURATION_TYPES)
 endif()
 
