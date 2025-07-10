@@ -84,7 +84,7 @@ opencolorio-dbg:
     PKG_CONFIG_PATH: !Prepend '${INSTALL_PREFIX}/dbg/lib/pkgconfig'
   Library: opencolorio
   Requires:
-    weta.runtime: ">=1.21.1"
+    weta.runtime: ">=1.23.153"
     openexr: ">=3.1.0<3.2.0"
     libexpat: ">=2.4.1<2.5"
     python: !Soft ">=3.9.0<3.10.0"
@@ -113,20 +113,19 @@ pyopencolorio:
 build.opencolorio:
   Type: Weta::OSS::CmakePackage
   BaseEnvironment:
-    - cmake-3.21.3
+    - cmake-4.0.1-weta.1
+    - weta_cmake_provider-2.1.1
     - ninja-1.10.2
     - patchelf-0.13.0
-    - weta.runtime-1.21.1
-    - python-3.9.10
-    - pynumpy-1.22.3
+    - weta.runtime-1.23.153
     - oz-official
   BuildEnvironment:
     # will need lcms2, et al if we start building the apps which we may want...
-    - WetaVFXPlatform-2022.0.0
-    - python-3.9.10
-    - pynumpy-1.22.3
+    - WetaVFXPlatform-2022.0.15
+    - python-3.9.10-weta.1
+    - pynumpy-1.22.3-weta.1
     - lcms2-2.14-1
-    - boost-1.76.0-weta.2
+    - boost-1.76.0-weta.5
     - openexr-3.1.5-weta.2
     - imath-3.1.6-weta.1
     - libexpat-2.4.1

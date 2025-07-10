@@ -7,6 +7,13 @@
 
 cmake_minimum_required(VERSION 3.12)
 
+# CMake does not pull the value from the env, so we have to manually
+# configure it.
+if(DEFINED ENV{CMAKE_PROJECT_TOP_LEVEL_INCLUDES})
+    set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES $ENV{CMAKE_PROJECT_TOP_LEVEL_INCLUDES})
+endif()
+
+
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/share/cmake/utils
