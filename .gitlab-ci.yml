@@ -15,7 +15,7 @@ default:
     - shared-runner:nfs
 
 variables:
-  RELEASE_VERSION: 2.1.3-5-weta.1
+  RELEASE_VERSION: 2.1.3-5-weta.2
   KUBERNETES_CPU_LIMIT: "16"
   KUBERNETES_MEMORY_REQUEST: "32Gi"
 
