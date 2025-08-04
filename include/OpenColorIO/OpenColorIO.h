@@ -19,6 +19,9 @@
 #include "OpenColorTransforms.h"
 #include "OpenColorAppHelpers.h"
 
+#undef min
+#undef max
+
 /*
 
 C++ API
