@@ -21,7 +21,7 @@
 # name = "ocio"
 name = "ocio_tools"
 
-version = "2.2.1.hh.1.0.0"
+version = "2.2.1.hh.1.0.1"  # remember to change line 53 (ocio version)
 
 authors = [
     "AcademySoftwareFoundation",
@@ -50,6 +50,7 @@ def requires():
             "libexpat",
             "pybind11",
             "imath",
+            "ocio-2.2.1",
             "oiio",
         ]
     else:
