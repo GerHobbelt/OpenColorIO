@@ -27,7 +27,7 @@ endif()
 ###############################################################################
 # Project definition.
 
-project(OpenColorIO 
+project(OpenColorIO
     VERSION 2.2.1
     DESCRIPTION "OpenColorIO (OCIO) is a complete color management solution"
     HOMEPAGE_URL https://github.com/AcademySoftwareFoundation/OpenColorIO
@@ -56,7 +56,7 @@ include(GNUInstallDirs)
 # Forbid in-source build.
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-    message(FATAL_ERROR 
+    message(FATAL_ERROR
             "In-source build not allowed. Please make a new sub-directory and run cmake from there.")
 endif()
 
@@ -96,7 +96,7 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeR
 
 if(NOT "${CMAKE_BUILD_TYPE}" IN_LIST CMAKE_CONFIGURATION_TYPES)
     string(REPLACE ";" ", " _CMAKE_CONFIGURATION_TYPES_STR "${CMAKE_CONFIGURATION_TYPES}")
-    message(FATAL_ERROR 
+    message(FATAL_ERROR
             "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} is unsupported. Supported values are: ${_CMAKE_CONFIGURATION_TYPES_STR}.")
 endif()
 
@@ -120,12 +120,20 @@ include(CppVersion)
 ###############################################################################
 # Components to build
 
+#############################################
+# REZ
+set(HH_USE_OIIO OFF)
+if(DEFINED ENV{REZ_OIIO_ROOT})
+set(HH_USE_OIIO ON)
+endif()
+#############################################
+
 option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-option(OCIO_BUILD_APPS "Set to OFF to disable command-line apps" ON)
+option(OCIO_BUILD_APPS "Set to OFF to disable command-line apps" ${HH_USE_OIIO})  # Marcelo: was ON
 option(OCIO_BUILD_OPENFX "Specify whether to build OpenFX plugins" OFF)
 option(OCIO_BUILD_NUKE "Specify whether to build nuke plugins" OFF)
-option(OCIO_BUILD_TESTS "Specify whether to build unittests" ON)
-option(OCIO_BUILD_GPU_TESTS "Specify whether to build gpu unittests" ON)
+option(OCIO_BUILD_TESTS "Specify whether to build unittests" OFF)  # Marcelo: was ON
+option(OCIO_BUILD_GPU_TESTS "Specify whether to build gpu unittests" OFF)  # Marcelo: was ON
 option(OCIO_USE_HEADLESS "Specify whether the GPU rendering is headless" OFF)
 
 option(OCIO_BUILD_FROZEN_DOCS "Specify whether to build frozen documentation, necessary when modifying the OCIO public API" OFF)
@@ -148,7 +156,7 @@ endif()
 # Optimization / internal linking preferences
 
 option(OCIO_USE_SSE "Specify whether to enable SSE CPU performance optimizations" ON)
-option(OCIO_USE_OIIO_CMAKE_CONFIG "Specify whether to look for OIIO using the generated CMake Config script instead of the custom FindOpenImageIO.cmake script" OFF)
+option(OCIO_USE_OIIO_CMAKE_CONFIG "Specify whether to look for OIIO using the generated CMake Config script instead of the custom FindOpenImageIO.cmake script" ON)  # Marcelo: was OFF
 option(OCIO_USE_OIIO_FOR_APPS "Request OIIO to build apps (ociolutimage, ocioconvert and ociodisplay), the default uses OpenEXR." OFF)
 
 
@@ -178,7 +186,7 @@ if(DEFINED OCIO_INSTALL_EXT_PACKAGES)
     # Case insensitive match
     string(TOUPPER "${OCIO_INSTALL_EXT_PACKAGES}" _OCIO_INSTALL_EXT_PACKAGES)
     if(NOT "${_OCIO_INSTALL_EXT_PACKAGES}" IN_LIST _EXT_OPTIONS)
-        message(FATAL_ERROR 
+        message(FATAL_ERROR
                 "OCIO_INSTALL_EXT_PACKAGES=${OCIO_INSTALL_EXT_PACKAGES} is unsupported. Supported values are: ${_EXT_OPTIONS_STR}.")
     endif()
 endif()
@@ -194,7 +202,7 @@ set_property(CACHE OCIO_INSTALL_EXT_PACKAGES PROPERTY STRINGS ${_EXT_OPTIONS})
 # Versioning
 
 if(NOT DEFINED SOVERSION)
-    set(SOVERSION "${OpenColorIO_VERSION_MAJOR}.${OpenColorIO_VERSION_MINOR}" CACHE STRING 
+    set(SOVERSION "${OpenColorIO_VERSION_MAJOR}.${OpenColorIO_VERSION_MINOR}" CACHE STRING
         "Set the SO version in the SO name of the output library")
     message(STATUS "Setting SOVERSION to '${SOVERSION}' as none was specified.")
 elseif(SOVERSION STREQUAL "")
@@ -206,12 +214,12 @@ endif()
 # Namespace
 
 if(NOT DEFINED OCIO_NAMESPACE)
-	set(OCIO_NAMESPACE "OpenColorIO_v${OpenColorIO_VERSION_MAJOR}_${OpenColorIO_VERSION_MINOR}${OpenColorIO_VERSION_RELEASE_TYPE}" CACHE STRING 
+	set(OCIO_NAMESPACE "OpenColorIO_v${OpenColorIO_VERSION_MAJOR}_${OpenColorIO_VERSION_MINOR}${OpenColorIO_VERSION_RELEASE_TYPE}" CACHE STRING
         "Specify the main OCIO C++ namespace: Options include OpenColorIO OpenColorIO_<YOURFACILITY> etc.")
 elseif(OCIO_NAMESPACE STREQUAL "")
     message(FATAL_ERROR "A namespace cannot be empty.")
 else()
-    set(OCIO_NAMESPACE "OpenColorIO_${OCIO_NAMESPACE}_v${OpenColorIO_VERSION_MAJOR}_${OpenColorIO_VERSION_MINOR}${OpenColorIO_VERSION_RELEASE_TYPE}" CACHE STRING 
+    set(OCIO_NAMESPACE "OpenColorIO_${OCIO_NAMESPACE}_v${OpenColorIO_VERSION_MAJOR}_${OpenColorIO_VERSION_MINOR}${OpenColorIO_VERSION_RELEASE_TYPE}" CACHE STRING
         "Specify the main OCIO C++ namespace: Options include OpenColorIO OpenColorIO_<YOURFACILITY> etc.")
     message(STATUS "Setting namespace to '${OCIO_NAMESPACE}' as none was specified.")
 endif()
@@ -231,12 +239,12 @@ set (OCIO_LIBNAME_SUFFIX "" CACHE STRING
 # Error checking
 
 if(OCIO_BUILD_SHARED AND OCIO_BUILD_STATIC)
-	message(FATAL_ERROR 
+	message(FATAL_ERROR
             "Deprecated options OCIO_BUILD_SHARED and OCIO_BUILD_STATIC cannot both be used at once")
 endif()
 
 if(OCIO_BUILD_SHARED)
-	message(DEPRECATION 
+	message(DEPRECATION
             "Option OCIO_BUILD_SHARED is deprecated. Please use the cmake standard BUILD_SHARED_LIBS=ON (default ON)")
 	if(NOT BUILD_SHARED_LIBS)
 		set(BUILD_SHARED_LIBS ON)
@@ -244,7 +252,7 @@ if(OCIO_BUILD_SHARED)
 endif()
 
 if(OCIO_BUILD_STATIC)
-	message(DEPRECATION 
+	message(DEPRECATION
             "Option OCIO_BUILD_STATIC is deprecated. Please use the cmake standard BUILD_SHARED_LIBS=OFF (default ON)")
 	if(BUILD_SHARED_LIBS)
 		set(BUILD_SHARED_LIBS OFF)
@@ -252,7 +260,7 @@ if(OCIO_BUILD_STATIC)
 endif()
 
 if (NOT BUILD_SHARED_LIBS AND NOT OCIO_INSTALL_EXT_PACKAGES STREQUAL NONE)
-   message(STATUS "Note that building the static version of OpenColorIO does not embed the dependencies\  
+   message(STATUS "Note that building the static version of OpenColorIO does not embed the dependencies\
    into the library file. The needed dependencies must be linked to the consumer
    application or shared library that uses static OpenColorIO.
 
@@ -263,8 +271,8 @@ endif()
 
 ###############################################################################
 # Find or install external dependencies
-# Some required targets may be created by third-party CMake configs, which 
-# don't generally produce global targets. To guarantee all imported targets are 
+# Some required targets may be created by third-party CMake configs, which
+# don't generally produce global targets. To guarantee all imported targets are
 # global, this module is included at the project root level.
 
 include(FindExtPackages)
