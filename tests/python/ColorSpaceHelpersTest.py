@@ -156,7 +156,7 @@ class ColorSpaceHelpersTest(unittest.TestCase):
         hlevels = menu.getHierarchyLevels(1)
         self.assertEqual(len(hlevels), 0)
 
-        # Other paramters are ignored if role exist.
+        # Other parameters are ignored if role exist.
         params.setAppCategories('file-io')
         menu = OCIO.ColorSpaceMenuHelper(params)
         self.assertEqual(menu.getNumColorSpaces(), 1)

@@ -40,7 +40,7 @@ public:
     static CDLOpData::Style ConvertStyle(CDLStyle style, TransformDirection dir);
     static CDLStyle ConvertStyle(CDLOpData::Style style);
 
-    // Type definition to hold the values of a SOP paramater
+    // Type definition to hold the values of a SOP parameter
     // (scale, offset and power) for all channels
     struct ChannelParams
     {
