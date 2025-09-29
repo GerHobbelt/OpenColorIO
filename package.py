@@ -21,7 +21,7 @@
 # name = "ocio"
 name = "ocio_tools"
 
-version = "2.2.1.hh.1.0.1"  # remember to change line 53 (ocio version)
+version = "2.2.1.hh.1.1.0"  # remember to change line 53 (ocio version)
 
 authors = [
     "AcademySoftwareFoundation",
