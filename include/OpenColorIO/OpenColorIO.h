@@ -222,8 +222,8 @@ extern OCIOEXPORT void SetCurrentConfig(const ConstConfigRcPtr & config);
  * "ocio://studio-config-latest" will point to newer versions of those configs. Therefore, it is 
  * recommended that application developers not save those strings and instead save the string that 
  * refers to the current version of that config. That way, it's guaranteed that there will be no 
- * change of behavior in the future. For example, as of OCIO 2.4, "ocio://default" should be saved
- * as "ocio://cg-config-v2.2.0_aces-v1.3_ocio-v2.4".
+ * change of behavior in the future. For example, as of OCIO 2.5, "ocio://default" should be saved
+ * as "ocio://cg-config-v4.0.0_aces-v2.0_ocio-v2.5".
  * 
  * Note that there is no validation done on the path. That is left to the application since 
  * typically the application will load the config before attempting to save its path
@@ -381,11 +381,13 @@ public:
      * "studio-config-v1.0.0_aces-v1.3_ocio-v2.1"
      * "studio-config-v2.1.0_aces-v1.3_ocio-v2.3"
      * "studio-config-v2.2.0_aces-v1.3_ocio-v2.4"
+     * "studio-config-v4.0.0_aces-v2.0_ocio-v2.5"
      * 
      * ACES CG config, basic color spaces for computer graphics apps:
      * "cg-config-v1.0.0_aces-v1.3_ocio-v2.1"
      * "cg-config-v2.1.0_aces-v1.3_ocio-v2.3"
      * "cg-config-v2.2.0_aces-v1.3_ocio-v2.4"
+     * "cg-config-v4.0.0_aces-v2.0_ocio-v2.5"
      * 
      * More information is available at: 
      * %https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES
@@ -1329,6 +1331,11 @@ public:
      */
     void addNamedTransform(const ConstNamedTransformRcPtr & namedTransform);
 
+    /**
+     * \brief Remove a named transform. (Does nothing if name is not found.)
+     */
+    void removeNamedTransform(const char * name);
+
     /// Clear all named transforms.
     void clearNamedTransforms();
 
@@ -1740,7 +1747,7 @@ public:
     /// Does include default rule. Result will be at least 1.
     size_t getNumEntries() const noexcept;
 
-    /// Get the index from the rule name.
+    /// Get the index from the rule name. Throws if the rule is not found.
     size_t getIndexForRule(const char * ruleName) const;
 
     /// Get name of the rule.
@@ -3499,8 +3506,9 @@ public:
      *   The 'values' parameter contains the LUT data which must be used as-is as the dimensions and
      *   origin are hard-coded in the fragment shader program. So, it means one GPU texture per entry.
      * 
-     * \return Index of the texture. For shading languages using explicit texture bindings, the return
-     *         value is the same as the texture binding index in the generated shader program.
+     * \return Shader binding index of the texture. For shading languages using explicit texture bindings,
+     *         the return value is the same as the texture binding index in the generated shader program.
+     *         The setDescriptorSetIndex function may be used to offset the starting index value.
      **/
     virtual unsigned addTexture(const char * textureName,
                                 const char * samplerName,
@@ -3518,8 +3526,9 @@ public:
      *   and origin are hard-coded in the fragment shader program. So, it means one GPU 3D texture
      *   per entry.
      * 
-     * \return Index of the texture. For shading languages using explicit texture bindings, the return
-     *         value is the same as the texture binding index in the generated shader program.
+     * \return Shader binding index of the texture. For shading languages using explicit texture bindings,
+     *         the return value is the same as the texture binding index in the generated shader program.
+     *         The setDescriptorSetIndex function may be used to offset the starting index value.
      **/
     virtual unsigned add3DTexture(const char * textureName,
                               const char * samplerName,
@@ -3771,7 +3780,12 @@ public:
     **/
     virtual std::size_t getUniformBufferSize() const noexcept = 0;
 
-    // 1D lut related methods
+    /**
+     * The getTexture methods are used to access Lut1D arrays to upload to the GPU as textures.
+     * Please note that the index used here is based on the total number of Lut1Ds used by 
+     * the Processor and is different from the texture shader binding index, which may be
+     * obtained using the corresponding function.
+     */
     virtual unsigned getNumTextures() const noexcept = 0;
     virtual void getTexture(unsigned index,
                             const char *& textureName,
@@ -3782,8 +3796,15 @@ public:
                             TextureDimensions & dimensions,
                             Interpolation & interpolation) const = 0;
     virtual void getTextureValues(unsigned index, const float *& values) const = 0;
+    /// Get the index used to declare the texture in the shader for languages such as Vulkan.
+    virtual unsigned getTextureShaderBindingIndex(unsigned index) const = 0;
 
-    // 3D lut related methods
+    /**
+     * The get3DTexture methods are used to access Lut3D arrays to upload to the GPU as textures.
+     * Please note that the index used here is based on the total number of Lut3Ds used by 
+     * the Processor and is different from the texture shader binding index, which may be
+     * obtained using the corresponding function.
+     */
     virtual unsigned getNum3DTextures() const noexcept = 0;
     virtual void get3DTexture(unsigned index,
                               const char *& textureName,
@@ -3791,6 +3812,8 @@ public:
                               unsigned & edgelen,
                               Interpolation & interpolation) const = 0;
     virtual void get3DTextureValues(unsigned index, const float *& values) const = 0;
+    /// Get the index used to declare the texture in the shader for languages such as Vulkan.
+    virtual unsigned get3DTextureShaderBindingIndex(unsigned index) const = 0;
 
     /// Get the complete OCIO shader program.
     const char * getShaderText() const noexcept;
@@ -4012,9 +4035,6 @@ public:
      */
     virtual bool isBuiltinConfigRecommended(size_t configIndex) const = 0;
 
-    // Return the full forward-compatible name of the default built-in config.
-    OCIO_DEPRECATED("This was marked as deprecated starting in v2.3, please use ResolveConfigPath(\"ocio://default\").")
-    virtual const char * getDefaultBuiltinConfigName() const = 0;
 protected:
     BuiltinConfigRegistry() = default;
     virtual ~BuiltinConfigRegistry() = default;
